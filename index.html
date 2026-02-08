@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYRO GEARLOOSE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Dubbel Waterteken - Pi en digits - MEER ZICHTBAAR */
+        body::before {
+            content: 'π π π π π π π π π π';
+            position: fixed;
+            top: -10%;
+            left: 0;
+            width: 120%;
+            height: 120%;
+            font-size: 250px;
+            color: rgba(150, 150, 150, 0.25);
+            z-index: 0;
+            pointer-events: none;
+            font-weight: bold;
+            line-height: 1.2;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: '3.14159265359   3.14159265359   3.14159265359   3.14159265359   3.14159265359   3.14159265359';
+            position: fixed;
+            top: 5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            font-size: 50px;
+            color: rgba(140, 140, 140, 0.2);
+            z-index: 0;
+            pointer-events: none;
+            font-weight: bold;
+            letter-spacing: 15px;
+            line-height: 2.5;
+            transform: rotate(-8deg);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #000;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .top-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Language Selector */
+        .lang-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        /* Shopping Cart */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 28px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .gyro-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .circle-frame {
+            width: 150px;
+            height: 150px;
+            border: 4px solid #000;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+
+        .gyro-image {
+            position: absolute;
+            width: 200px;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            filter: none;
+        }
+
+        .lightbulb-shoulder {
+            position: absolute;
+            font-size: 35px;
+            top: 25%;
+            left: -15px;
+            z-index: 3;
+            animation: glow 2s infinite;
+        }
+
+        .lightbulb-idea {
+            position: absolute;
+            font-size: 45px;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            animation: pulse 1.5s infinite;
+        }
+
+        .pointing-hand {
+            position: absolute;
+            font-size: 30px;
+            top: 5%;
+            left: 55%;
+            z-index: 3;
+            transform: rotate(-45deg);
+        }
+
+        .pi-symbol {
+            position: absolute;
+            font-size: 40px;
+            bottom: -10px;
+            right: -20px;
+            font-weight: bold;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.15); }
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: #000;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .hero h2 {
+            font-size: 24px;
+            color: #333;
+            margin-top: 15px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #000;
+            font-size: 16px;
+        }
+
+        /* Main Content Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 0;
+            margin-top: 30px;
+        }
+
+        /* Sidebar Categories */
+        .sidebar {
+            background: #FFD700;
+            padding: 20px 15px;
+            border-right: 3px solid #000;
+            border-top: 3px solid #000;
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-item:hover, .category-item.active {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
+        /* Products Section */
+        .products-section {
+            background: white;
+            min-height: 500px;
+        }
+
+        /* Hot Products Header */
+        .hot-header {
+            background: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid #000;
+            border-bottom: 3px solid #000;
+        }
+
+        .hot-header h2 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .hot-header p {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Carousel Container */
+        .carousel-wrapper {
+            padding: 40px 20px;
+            background: white;
+            position: relative;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .carousel {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card {
+            min-width: 200px;
+            max-width: 200px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #2196F3;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: #333;
+            min-height: 40px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            color: #2196F3;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .buy-btn {
+            background: #FFD700;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .buy-btn:hover {
+            background: #FFC700;
+            transform: scale(1.05);
+        }
+
+        /* Carousel Navigation */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .carousel-nav:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-nav.prev {
+            left: 10px;
+        }
+
+        .carousel-nav.next {
+            right: 10px;
+        }
+
+        /* Category Products Grid */
+        .category-products {
+            padding: 40px;
+            display: none;
+        }
+
+        .category-products.active {
+            display: block;
+        }
+
+        .category-products h2 {
+            font-size: 28px;
+            color: #000;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2196F3;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        /* Checkout Button */
+        .checkout-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+        }
+
+        .checkout-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .checkout-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-modal.active {
+            display: flex;
+        }
+
+        .cart-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .cart-content h2 {
+            color: #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2196F3;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #2196F3;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .cart-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cart-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 3px solid #000;
+            }
+
+            .product-card {
+                min-width: 150px;
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="logo-text">GYRO GEARLOOSE</div>
+            <div class="top-right">
+                <div class="lang-selector">
+                    <button class="lang-btn active" data-lang="nl">NL</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="fr">FR</button>
+                    <button class="lang-btn" data-lang="de">DE</button>
+                </div>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="gyro-container">
+                <div class="circle-frame"></div>
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/Gyro_Gearloose.png/220px-Gyro_Gearloose.png" 
+                     alt="Gyro Gearloose" class="gyro-image">
+                <div class="lightbulb-idea">💡</div>
+                <div class="pointing-hand">👆</div>
+                <div class="lightbulb-shoulder">💡</div>
+                <div class="pi-symbol">π</div>
+            </div>
+            <h1 data-translate="title-main">GYRO GEARLOOSE</h1>
+            <h2 data-translate="title-sub">GYRO GEAR LOOSE</h2>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Uitviπdiπgeπ..." data-translate-placeholder="search">
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3 data-translate="categories">CATEGORIEËN</h3>
+                <ul class="category-list">
+                    <li class="category-item active" onclick="showCategory('hot')">
+                        <span>🔥</span>
+                        <span data-translate="cat-hot">Hot Products</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('electronics')">
+                        <span>⚙️</span>
+                        <span data-translate="cat-electronics">Electronica</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('tools')">
+                        <span>🛠️</span>
+                        <span data-translate="cat-tools">Gereedschap</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('home')">
+                        <span>🏠</span>
+                        <span data-translate="cat-home">Huis & Tuin</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('gadgets')">
+                        <span>🧩</span>
+                        <span data-translate="cat-gadgets">Gadgets</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('transport')">
+                        <span>🚲</span>
+                        <span data-translate="cat-transport">Vervoer</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('inventions')">
+                        <span>🧪</span>
+                        <span data-translate="cat-inventions">Uitvindingen</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('sports')">
+                        <span>⚽</span>
+                        <span data-translate="cat-sports">Sport</span>
+                    </li>
+                    <li class="category-item" onclick="showCategory('books')">
+                        <span>📚</span>
+                        <span data-translate="cat-books">Boeken</span>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Products Section -->
+            <div class="products-section">
+                <!-- Hot Products -->
+                <div id="hotSection">
+                    <div class="hot-header">
+                        <h2 data-translate="hot-title">HOT PRODUCTS</h2>
+                        <p data-translate="hot-subtitle">Voor elke categorie nu inhoud!</p>
+                    </div>
+
+                    <div class="carousel-wrapper">
+                        <div class="carousel-container">
+                            <button class="carousel-nav prev" onclick="moveCarousel(-1)">‹</button>
+                            <div class="carousel" id="carousel"></div>
+                            <button class="carousel-nav next" onclick="moveCarousel(1)">›</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Products -->
+                <div class="category-products" id="categoryProducts">
+                    <h2 id="categoryTitle">Products</h2>
+                    <div class="products-grid" id="productsGrid"></div>
+                </div>
+
+                <!-- Checkout -->
+                <div class="checkout-container">
+                    <button class="checkout-btn" onclick="alert('In de echte site gaat dit naar checkout.html')">
+                        <span data-translate="checkout">💳 Afrekenen & Betalen</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <h2 data-translate="cart-title">Winkelmandje</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total">
+                <span data-translate="total">Totaal:</span> <span id="cartTotal">€0.00</span>
+            </div>
+            <div class="cart-buttons">
+                <button class="checkout-btn" onclick="alert('In de echte site gaat dit naar checkout.html')">
+                    <span data-translate="checkout-btn">Afrekenen</span>
+                </button>
+                <button class="checkout-btn" style="background: #999;" onclick="toggleCart()">
+                    <span data-translate="close">Sluiten</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            nl: {
+                'title-main': 'GYRO GEARLOOSE',
+                'title-sub': 'GYRO GEAR LOOSE',
+                'search': 'Uitviπdiπgeπ...',
+                'categories': 'CATEGORIEËN',
+                'cat-hot': 'Hot Products',
+                'cat-electronics': 'Electronica',
+                'cat-tools': 'Gereedschap',
+                'cat-home': 'Huis & Tuin',
+                'cat-gadgets': 'Gadgets',
+                'cat-transport': 'Vervoer',
+                'cat-inventions': 'Uitvindingen',
+                'cat-sports': 'Sport',
+                'cat-books': 'Boeken',
+                'hot-title': 'HOT PRODUCTS',
+                'hot-subtitle': 'Voor elke categorie nu inhoud!',
+                'buy-now': 'Koop Nu',
+                'checkout': '💳 Afrekenen & Betalen',
+                'cart-title': 'Winkelmandje',
+                'total': 'Totaal:',
+                'checkout-btn': 'Afrekenen',
+                'close': 'Sluiten'
+            },
+            en: {
+                'title-main': 'GYRO GEARLOOSE',
+                'title-sub': 'GYRO GEAR LOOSE',
+                'search': 'Iπveπtioπs...',
+                'categories': 'CATEGORIES',
+                'cat-hot': 'Hot Products',
+                'cat-electronics': 'Electronics',
+                'cat-tools': 'Tools',
+                'cat-home': 'Home & Garden',
+                'cat-gadgets': 'Gadgets',
+                'cat-transport': 'Transport',
+                'cat-inventions': 'Inventions',
+                'cat-sports': 'Sports',
+                'cat-books': 'Books',
+                'hot-title': 'HOT PRODUCTS',
+                'hot-subtitle': 'Content for every category now!',
+                'buy-now': 'Buy Now',
+                'checkout': '💳 Checkout & Pay',
+                'cart-title': 'Shopping Cart',
+                'total': 'Total:',
+                'checkout-btn': 'Checkout',
+                'close': 'Close'
+            },
+            fr: {
+                'title-main': 'GYRO GEARLOOSE',
+                'title-sub': 'GYRO GEAR LOOSE',
+                'search': 'Iπveπtioπs...',
+                'categories': 'CATÉGORIES',
+                'cat-hot': 'Produits Populaires',
+                'cat-electronics': 'Électronique',
+                'cat-tools': 'Outils',
+                'cat-home': 'Maison & Jardin',
+                'cat-gadgets': 'Gadgets',
+                'cat-transport': 'Transport',
+                'cat-inventions': 'Inventions',
+                'cat-sports': 'Sport',
+                'cat-books': 'Livres',
+                'hot-title': 'PRODUITS POPULAIRES',
+                'hot-subtitle': 'Contenu pour chaque catégorie maintenant!',
+                'buy-now': 'Acheter',
+                'checkout': '💳 Passer Commande',
+                'cart-title': 'Panier',
+                'total': 'Total:',
+                'checkout-btn': 'Commander',
+                'close': 'Fermer'
+            },
+            de: {
+                'title-main': 'GYRO GEARLOOSE',
+                'title-sub': 'GYRO GEAR LOOSE',
+                'search': 'Erfiπduπgeπ...',
+                'categories': 'KATEGORIEN',
+                'cat-hot': 'Beliebte Produkte',
+                'cat-electronics': 'Elektronik',
+                'cat-tools': 'Werkzeuge',
+                'cat-home': 'Haus & Garten',
+                'cat-gadgets': 'Gadgets',
+                'cat-transport': 'Transport',
+                'cat-inventions': 'Erfindungen',
+                'cat-sports': 'Sport',
+                'cat-books': 'Bücher',
+                'hot-title': 'BELIEBTE PRODUKTE',
+                'hot-subtitle': 'Inhalt für jede Kategorie jetzt!',
+                'buy-now': 'Jetzt kaufen',
+                'checkout': '💳 Zur Kasse',
+                'cart-title': 'Warenkorb',
+                'total': 'Gesamt:',
+                'checkout-btn': 'Kasse',
+                'close': 'Schließen'
+            }
+        };
+
+        let currentLang = 'nl';
+
+        const products = {
+            hot: [
+                {id: 1, name: 'Gear 1', price: 31.41, icon: '⚙️'},
+                {id: 2, name: 'Invention Sgadget', price: 45.00, icon: '🔧'},
+                {id: 3, name: 'Invention 2', price: 78.99, icon: '💡'},
+                {id: 4, name: 'Product 4', price: 24.50, icon: '🚗'},
+                {id: 5, name: 'Robot Helper', price: 159.00, icon: '🤖'},
+                {id: 6, name: 'Time Saver', price: 99.99, icon: '⏰'},
+                {id: 7, name: 'Brain Boost', price: 34.99, icon: '🧠'}
+            ],
+            electronics: [
+                {id: 11, name: 'LED Kit', price: 35.99, icon: '💡'},
+                {id: 12, name: 'Arduino Starter', price: 52.00, icon: '🔌'},
+                {id: 13, name: 'Sensor Pack', price: 67.50, icon: '📡'},
+                {id: 14, name: 'Mini Drone', price: 125.00, icon: '🚁'}
+            ],
+            tools: [
+                {id: 21, name: 'Multi-Tool', price: 44.99, icon: '🔨'},
+                {id: 22, name: 'Screwdriver Set', price: 28.50, icon: '🪛'},
+                {id: 23, name: 'Electric Drill', price: 89.00, icon: '⚡'},
+                {id: 24, name: 'Measure Tool', price: 19.99, icon: '📏'}
+            ],
+            home: [
+                {id: 31, name: 'Smart Garden', price: 75.00, icon: '🌱'},
+                {id: 32, name: 'Solar Lights', price: 45.50, icon: '☀️'},
+                {id: 33, name: 'Water Filter', price: 120.00, icon: '💧'},
+                {id: 34, name: 'Air Monitor', price: 65.00, icon: '🌡️'}
+            ],
+            gadgets: [
+                {id: 41, name: 'Fidget Gear', price: 12.99, icon: '🎮'},
+                {id: 42, name: 'Puzzle Cube', price: 18.50, icon: '🧩'},
+                {id: 43, name: 'Levitating Globe', price: 95.00, icon: '🌍'},
+                {id: 44, name: 'Smart Mirror', price: 145.00, icon: '🪞'}
+            ],
+            transport: [
+                {id: 51, name: 'E-Scooter', price: 299.00, icon: '🛴'},
+                {id: 52, name: 'Bike Kit', price: 32.00, icon: '🚴'},
+                {id: 53, name: 'GPS Tracker', price: 48.50, icon: '📍'},
+                {id: 54, name: 'Safety Lights', price: 22.00, icon: '🚨'}
+            ],
+            inventions: [
+                {id: 61, name: 'Motion Demo', price: 88.00, icon: '♾️'},
+                {id: 62, name: 'Experiment Kit', price: 62.50, icon: '🔬'},
+                {id: 63, name: 'Robot Kit', price: 135.00, icon: '🤖'},
+                {id: 64, name: 'Chemistry Set', price: 78.00, icon: '⚗️'}
+            ],
+            sports: [
+                {id: 71, name: 'Jump Rope', price: 29.99, icon: '🪢'},
+                {id: 72, name: 'Fitness Tracker', price: 85.00, icon: '⌚'},
+                {id: 73, name: 'Yoga Mat', price: 39.50, icon: '🧘'},
+                {id: 74, name: 'Resistance Bands', price: 24.99, icon: '💪'}
+            ],
+            books: [
+                {id: 81, name: 'Inventor Handbook', price: 31.50, icon: '📕'},
+                {id: 82, name: 'Physics Guide', price: 27.00, icon: '📘'},
+                {id: 83, name: 'Tech Magazine', price: 45.00, icon: '📰'},
+                {id: 84, name: 'DIY Projects', price: 22.50, icon: '📗'}
+            ]
+        };
+
+        let cart = [];
+        let currentCategory = 'hot';
+        let carouselPosition = 0;
+
+        function init() {
+            renderHotProducts();
+            updateCartDisplay();
+            setupLanguage();
+        }
+
+        function setupLanguage() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLang = this.getAttribute('data-lang');
+                    updateLanguage();
+                });
+            });
+        }
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-translate]').forEach(elem => {
+                const key = elem.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    elem.textContent = translations[currentLang][key];
+                }
+            });
+            
+            const searchBar = document.querySelector('.search-bar');
+            if (searchBar) {
+                searchBar.placeholder = translations[currentLang]['search'];
+            }
+            
+            renderHotProducts();
+            if (currentCategory !== 'hot') {
+                showCategory(currentCategory);
+            }
+        }
+
+        function renderHotProducts() {
+            const carousel = document.getElementById('carousel');
+            carousel.innerHTML = products.hot.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.icon}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">€${product.price.toFixed(2)}</div>
+                    <button class="buy-btn" onclick="addToCart(${product.id}, 'hot')">
+                        ${translations[currentLang]['buy-now']}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function moveCarousel(direction) {
+            const carousel = document.getElementById('carousel');
+            const cardWidth = 220;
+            carouselPosition += direction * cardWidth;
+            const maxScroll = -(carousel.children.length - 4) * cardWidth;
+            carouselPosition = Math.max(maxScroll, Math.min(0, carouselPosition));
+            carousel.style.transform = `translateX(${carouselPosition}px)`;
+        }
+
+        setInterval(() => {
+            const carousel = document.getElementById('carousel');
+            if (carousel && currentCategory === 'hot') {
+                moveCarousel(1);
+                if (carouselPosition <= -(carousel.children.length - 4) * 220) {
+                    carouselPosition = 0;
+                    carousel.style.transform = 'translateX(0)';
+                }
+            }
+        }, 3000);
+
+        function showCategory(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.category-item').classList.add('active');
+
+            if (category === 'hot') {
+                document.getElementById('hotSection').style.display = 'block';
+                document.getElementById('categoryProducts').classList.remove('active');
+                carouselPosition = 0;
+                document.getElementById('carousel').style.transform = 'translateX(0)';
+            } else {
+                document.getElementById('hotSection').style.display = 'none';
+                document.getElementById('categoryProducts').classList.add('active');
+                
+                const categoryTitle = document.getElementById('categoryTitle');
+                categoryTitle.textContent = translations[currentLang][`cat-${category}`];
+                
+                renderCategoryProducts(category);
+            }
+        }
+
+        function renderCategoryProducts(category) {
+            const grid = document.getElementById('productsGrid');
+            const categoryProducts = products[category] || [];
+            
+            grid.innerHTML = categoryProducts.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.icon}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">€${product.price.toFixed(2)}</div>
+                    <button class="buy-btn" onclick="addToCart(${product.id}, '${category}')">
+                        ${translations[currentLang]['buy-now']}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(productId, category) {
+            const product = products[category].find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({...product, quantity: 1, category});
+            }
+            
+            updateCartDisplay();
+            
+            const btn = event.target;
+            btn.textContent = '✓ Toegevoegd!';
+            btn.style.background = '#4CAF50';
+            setTimeout(() => {
+                btn.textContent = translations[currentLang]['buy-now'];
+                btn.style.background = '#FFD700';
+            }, 1000);
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart">Winkelmandje is leeg</div>';
+                cartTotal.textContent = '€0.00';
+            } else {
+                cartItems.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-details">€${item.price.toFixed(2)} x ${item.quantity} = €${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">×</button>
+                    </div>
+                `).join('');
+                
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                cartTotal.textContent = `€${total.toFixed(2)}`;
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('active');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
