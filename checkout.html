@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afrekeπeπ - GYRO GEARLOOSE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Watermerk */
+        body::before {
+            content: 'π π π π π';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 200px;
+            color: rgba(150, 150, 150, 0.15);
+            z-index: 0;
+            pointer-events: none;
+            font-weight: bold;
+        }
+
+        body::after {
+            content: '3.14159265359 3.14159265359';
+            position: fixed;
+            top: 20%;
+            left: 0;
+            width: 100%;
+            font-size: 40px;
+            color: rgba(140, 140, 140, 0.12);
+            z-index: 0;
+            pointer-events: none;
+            letter-spacing: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 50px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 3px solid #000;
+        }
+
+        .top-bar h1 {
+            font-size: 32px;
+            color: #000;
+        }
+
+        .top-bar p {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 2px solid #ddd;
+        }
+
+        .section h2 {
+            color: #000;
+            margin-bottom: 25px;
+            font-size: 24px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2196F3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .order-summary {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-top: 3px solid #2196F3;
+            margin-top: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .payment-method:hover {
+            border-color: #2196F3;
+            transform: translateY(-2px);
+        }
+
+        .payment-method.selected {
+            border-color: #2196F3;
+            background: #E3F2FD;
+        }
+
+        .payment-method .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .payment-method .name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #999;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #777;
+        }
+
+        .success-message {
+            display: none;
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <h1>🛒 Afrekeπeπ - GYRO GEARLOOSE</h1>
+            <p>Rond je bestelling af</p>
+        </div>
+
+        <div class="checkout-grid">
+            <!-- Verzendgegevens -->
+            <div class="section">
+                <h2>📦 Verzendgegevens</h2>
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label>Volledige Naam *</label>
+                        <input type="text" id="fullName" required placeholder="Jan Jansen">
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-mailadres *</label>
+                        <input type="email" id="email" required placeholder="jan@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefoonnummer *</label>
+                        <input type="tel" id="phone" required placeholder="+31 6 12345678">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adres *</label>
+                        <input type="text" id="address" required placeholder="Hoofdstraat 123">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Postcode *</label>
+                            <input type="text" id="postal" required placeholder="1234 AB">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Stad *</label>
+                            <input type="text" id="city" required placeholder="Amsterdam">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Land *</label>
+                        <select id="country" required>
+                            <option value="NL">Nederland</option>
+                            <option value="BE">België</option>
+                            <option value="DE">Duitsland</option>
+                            <option value="FR">Frankrijk</option>
+                            <option value="UK">Verenigd Koninkrijk</option>
+                            <option value="US">Verenigde Staten</option>
+                            <option value="OTHER">Anders</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Opmerkingen (optioneel)</label>
+                        <textarea id="notes" rows="3" placeholder="Bezorginstructies..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Besteloverzicht & Betaling -->
+            <div>
+                <div class="section">
+                    <h2>📋 Besteloverzicht</h2>
+                    <div class="order-summary" id="orderSummary"></div>
+
+                    <h2 style="margin-top: 30px;">💳 Betaalmethode</h2>
+                    <div class="payment-methods">
+                        <div class="payment-method" onclick="selectPayment('ideal')">
+                            <div class="icon">🏦</div>
+                            <div class="name">iDEAL</div>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('paypal')">
+                            <div class="icon">💰</div>
+                            <div class="name">PayPal</div>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('applepay')">
+                            <div class="icon">🍎</div>
+                            <div class="name">Apple Pay</div>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('creditcard')">
+                            <div class="icon">💳</div>
+                            <div class="name">Creditcard</div>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('bancontact')">
+                            <div class="icon">🏧</div>
+                            <div class="name">Bancontact</div>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('klarna')">
+                            <div class="icon">📱</div>
+                            <div class="name">Klarna</div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="selectedPayment">
+
+                    <button class="btn" onclick="completeOrder()">
+                        ✅ Bestelling Afrondeπ & Betaleπ
+                    </button>
+
+                    <button class="btn btn-secondary" onclick="goBack()">
+                        ← Terug naar Winkel
+                    </button>
+
+                    <div class="success-message" id="successMessage">
+                        ✅ Bestelling succesvol geplaatst!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPaymentMethod = null;
+
+        function loadCart() {
+            const cartData = localStorage.getItem('gyroCart');
+            if (!cartData) {
+                alert('Je winkelmandje is leeg!');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const cart = JSON.parse(cartData);
+            displayOrderSummary(cart);
+        }
+
+        function displayOrderSummary(cart) {
+            const orderSummary = document.getElementById('orderSummary');
+            
+            let itemsHTML = '';
+            let subtotal = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                itemsHTML += `
+                    <div class="order-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <span style="color: #666;">€${item.price.toFixed(2)} x ${item.quantity}</span>
+                        </div>
+                        <div style="font-weight: 600;">
+                            €${itemTotal.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            const shipping = 5.95;
+            const total = subtotal + shipping;
+
+            orderSummary.innerHTML = `
+                ${itemsHTML}
+                <div class="order-item" style="margin-top: 15px;">
+                    <div>Subtotaal</div>
+                    <div>€${subtotal.toFixed(2)}</div>
+                </div>
+                <div class="order-item">
+                    <div>Verzendkosten</div>
+                    <div>€${shipping.toFixed(2)}</div>
+                </div>
+                <div class="order-total">
+                    <div>Totaal</div>
+                    <div>€${total.toFixed(2)}</div>
+                </div>
+            `;
+        }
+
+        function selectPayment(method) {
+            document.querySelectorAll('.payment-method').forEach(elem => {
+                elem.classList.remove('selected');
+            });
+
+            event.target.closest('.payment-method').classList.add('selected');
+            selectedPaymentMethod = method;
+            document.getElementById('selectedPayment').value = method;
+        }
+
+        function completeOrder() {
+            const form = document.getElementById('checkoutForm');
+            if (!form.checkValidity()) {
+                alert('Vul alle verplichte velden in!');
+                form.reportValidity();
+                return;
+            }
+
+            if (!selectedPaymentMethod) {
+                alert('Selecteer een betaalmethode!');
+                return;
+            }
+
+            const orderData = {
+                customer: {
+                    name: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    postal: document.getElementById('postal').value,
+                    city: document.getElementById('city').value,
+                    country: document.getElementById('country').value,
+                    notes: document.getElementById('notes').value
+                },
+                cart: JSON.parse(localStorage.getItem('gyroCart')),
+                paymentMethod: selectedPaymentMethod,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Order placed:', orderData);
+
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+
+            localStorage.removeItem('gyroCart');
+
+            setTimeout(() => {
+                alert(`Betaling via ${selectedPaymentMethod} wordt verwerkt...\n\nIn een echte webshop zou je nu doorgestuurd worden naar de betalingsprovider.`);
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        window.onload = loadCart;
+    </script>
+</body>
+</html>
